@@ -4,6 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
+from sqlalchemy.orm import sessionmaker
 
 # Locate and load the project's .env file
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -27,3 +28,17 @@ DATABASE_URL = URL.create(
 
 # Create the database engine
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+
+
+# Create database sessions
+SessionLocal = sessionmaker(
+    bind=engine,
+    autoflush=False
+)
+
+
+# Provide a session to FastAPI endpoints
+def get_db():
+    with SessionLocal() as db:
+        yield db
+
