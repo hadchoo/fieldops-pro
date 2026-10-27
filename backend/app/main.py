@@ -11,6 +11,7 @@ from app.models.user import User
 from app.models.organization import Organization
 from app.models.membership import Membership
 from app.routers.auth import router as auth_router
+from app.routers.organizations import router as organizations_router
 
 
 app = FastAPI(
@@ -19,6 +20,7 @@ app = FastAPI(
 )
 
 app.include_router(auth_router)
+app.include_router(organizations_router)
 
 app.add_middleware(
     CORSMiddleware,
