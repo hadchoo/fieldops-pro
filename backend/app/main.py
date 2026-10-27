@@ -10,12 +10,15 @@ from app.database import engine, get_db
 from app.models.user import User
 from app.models.organization import Organization
 from app.models.membership import Membership
+from app.routers.auth import router as auth_router
 
 
 app = FastAPI(
     title="FieldOps Pro API",
     version="0.1.0"
 )
+
+app.include_router(auth_router)
 
 app.add_middleware(
     CORSMiddleware,
