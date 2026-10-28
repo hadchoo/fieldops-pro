@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text, select, func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-
+from app.routers.events import router as events_router
 from app.database import engine, get_db
 from app.models.user import User
 from app.models.organization import Organization
@@ -21,7 +21,7 @@ app = FastAPI(
 
 app.include_router(auth_router)
 app.include_router(organizations_router)
-
+app.include_router(events_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
