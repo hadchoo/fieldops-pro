@@ -6,6 +6,8 @@ from app.database import engine
 from app.models import Base
 from app.models.participant import Participant
 from app.models.registration import Registration
+from app.models.task import Task
+from app.models.task_assignment import TaskAssignment
 
 # Alembic configuration
 config = context.config

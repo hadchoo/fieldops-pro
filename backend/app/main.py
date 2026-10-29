@@ -13,6 +13,11 @@ from app.models.membership import Membership
 from app.routers.auth import router as auth_router
 from app.routers.organizations import router as organizations_router
 from app.routers.registrations import router as registrations_router
+from app.routers.tasks import router as tasks_router
+from app.routers.task_assignments import router as task_assignments_router
+
+
+
 
 app = FastAPI(
     title="FieldOps Pro API",
@@ -24,6 +29,9 @@ app.include_router(organizations_router)
 app.include_router(events_router)
 app.include_router(participants_router)
 app.include_router(registrations_router)
+app.include_router(tasks_router)
+app.include_router(task_assignments_router)
+
 
 app.add_middleware(
     CORSMiddleware,
