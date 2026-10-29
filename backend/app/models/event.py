@@ -1,7 +1,7 @@
 
 import uuid
 from datetime import datetime
-
+from sqlalchemy import Integer
 from sqlalchemy import (
     String,
     DateTime,
@@ -83,3 +83,8 @@ class Event(Base):
         server_default=func.now(),
         nullable=False
     )
+
+    capacity: Mapped[int | None] = mapped_column(
+    Integer,
+    nullable=True
+     )

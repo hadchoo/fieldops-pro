@@ -2,7 +2,7 @@
 import uuid
 from datetime import datetime
 from typing import Literal
-
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -19,13 +19,14 @@ class EventCreate(BaseModel):
     location: str | None = Field(default=None, max_length=200)
     start_at: AwareDatetime
     end_at: AwareDatetime
+    capacity: int | None = Field(default=None, ge=1)
 
     @model_validator(mode="after")
     def validate_dates(self):
         if self.end_at <= self.start_at:
             raise ValueError("End date must be after start date")
         return self
-
+  
 
 class EventRead(BaseModel):
     id: uuid.UUID
@@ -38,6 +39,7 @@ class EventRead(BaseModel):
     status: str
     archived_at: datetime | None
     created_at: datetime
+    capacity: int | None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -48,6 +50,7 @@ class EventUpdate(BaseModel):
     location: str | None = Field(default=None, max_length=200)
     start_at: AwareDatetime | None = None
     end_at: AwareDatetime | None = None
+    capacity: int | None = Field(default=None, ge=1)
 
     @model_validator(mode="after")
     def validate_required_fields(self):

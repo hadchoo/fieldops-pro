@@ -1,7 +1,7 @@
 
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.routers.participants import router as participants_router
 from sqlalchemy import text, select, func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -12,7 +12,7 @@ from app.models.organization import Organization
 from app.models.membership import Membership
 from app.routers.auth import router as auth_router
 from app.routers.organizations import router as organizations_router
-
+from app.routers.registrations import router as registrations_router
 
 app = FastAPI(
     title="FieldOps Pro API",
@@ -22,6 +22,9 @@ app = FastAPI(
 app.include_router(auth_router)
 app.include_router(organizations_router)
 app.include_router(events_router)
+app.include_router(participants_router)
+app.include_router(registrations_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],

@@ -4,6 +4,8 @@ from app.models.event import Event
 from alembic import context
 from app.database import engine
 from app.models import Base
+from app.models.participant import Participant
+from app.models.registration import Registration
 
 # Alembic configuration
 config = context.config

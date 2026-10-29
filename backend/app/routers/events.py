@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -13,6 +13,7 @@ from app.dependencies import get_current_user
 from app.models.user import User
 from app.models.membership import Membership
 from app.models.event import Event
+from app.models.registration import Registration
 from app.schemas.event import (
     EventCreate,
     EventRead,
@@ -65,7 +66,8 @@ def create_event(
         description=event_data.description,
         location=event_data.location,
         start_at=event_data.start_at,
-        end_at=event_data.end_at
+        end_at=event_data.end_at,
+        capacity=event_data.capacity
     )
 
     try:
@@ -196,7 +198,7 @@ def update_event(
         select(Event).where(
             Event.id == event_id,
             Event.archived_at.is_(None)
-        )
+        ).with_for_update()
     )
 
     if event is None:
@@ -227,6 +229,23 @@ def update_event(
 
     update_data = event_data.model_dump(exclude_unset=True)
 
+    # PREVENT CAPACITY BELOW CURRENT REGISTRATIONS
+    if "capacity" in update_data and update_data["capacity"] is not None:
+
+        registered_count = db.scalar(
+            select(func.count(Registration.id)).where(
+                Registration.event_id == event.id,
+                Registration.status == "registered"
+            )
+        )
+
+        if update_data["capacity"] < registered_count:
+            raise HTTPException(
+                status_code=409,
+                detail="Capacity cannot be less than current registrations"
+            )
+
+    # VALIDATE EVENT DATES
     start_at = update_data.get("start_at", event.start_at)
     end_at = update_data.get("end_at", event.end_at)
 
@@ -236,6 +255,7 @@ def update_event(
             detail="End date must be after start date"
         )
 
+    # UPDATE EVENT FIELDS
     for field, value in update_data.items():
         setattr(event, field, value)
 
